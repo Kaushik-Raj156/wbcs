@@ -19,77 +19,81 @@ export default async function signupController(req, res) {
     adminPassword,
   } = req.body;
 
+  const adminCount = await Admin.countDocuments();
+  const requiresVerification = adminCount > 0;
+
   if (
     name &&
     lastname &&
     email &&
     password &&
     role &&
-    adminEmail &&
-    adminPassword
+    (!requiresVerification || (adminEmail && adminPassword))
   ) {
     try {
-      // check if an admin with root access is signing up the new admin
-      const admin = await Admin.findOne({ email: adminEmail });
-      if (admin === null) throw Error("admin not exist");
-      if (admin.role === "master" && admin.root === true) {
-        const valid = await comparePass(adminPassword, admin.password);
-        if (valid === true) {
-          // admin model
-    const hashedPass = await hashPass(password);
-          const admin = new Admin({
-            name,
-            lastname,
-            email,
-            password: hashedPass,
-            role,
-            root,
-          });
-          //save new admin
-          const createdAdmin = await admin.save();
-
-          // generate refresh token
-          const refresh = tokenGanarator(
-            createdAdmin._id,
-            refreshToken.type,
-            refreshToken.age
-          );
-          //generate access token
-          const access = tokenGanarator(
-            createdAdmin._id,
-            accessToken.type,
-            accessToken.age
-          );
-
-          // save refresh token in database
-          const submitedRef = await refreshTokenSubmiter(
-            refresh,
-            createdAdmin._id
-          );
-          // if refresh token save
-          if (submitedRef.message) {
-            // set refresh and access token as cookies
-            cookieGenerator(accessToken, access, req, res);
-            cookieGenerator(refreshToken, refresh, req, res);
-            isAdminCookie(req,res,true);
-
-            return res.status(201).json({
-              message: "account created successfuly",
-              account: { name, lastname },
-            });
-          }
-          else {
-            throw Error("token did not saved successfuly");
+      if (requiresVerification) {
+        // check if an admin with root access is signing up the new admin
+        const admin = await Admin.findOne({ email: adminEmail });
+        if (admin === null) throw Error("admin not exist");
+        if (admin.role === "master" && admin.root === true) {
+          const valid = await comparePass(adminPassword, admin.password);
+          if (valid !== true) {
+            return errorController(401, "invalid admin password", res);
           }
         } else {
-          errorController(401, "invalid admin password", res);
+          return errorController(
+            403,
+            "root access is needed in case to create new admin account",
+            res
+          );
         }
-      } else {
-        errorController(
-          403,
-          "root access is neeeded in case to create new admin account",
-          res
-        );
+      }
+
+      // admin model
+      const hashedPass = await hashPass(password);
+      const admin = new Admin({
+        name,
+        lastname,
+        email,
+        password: hashedPass,
+        role,
+        root,
+      });
+      //save new admin
+      const createdAdmin = await admin.save();
+
+      // generate refresh token
+      const refresh = tokenGanarator(
+        createdAdmin._id,
+        refreshToken.type,
+        refreshToken.age
+      );
+      //generate access token
+      const access = tokenGanarator(
+        createdAdmin._id,
+        accessToken.type,
+        accessToken.age
+      );
+
+      // save refresh token in database
+      const submitedRef = await refreshTokenSubmiter(
+        refresh,
+        createdAdmin._id
+      );
+      // if refresh token save
+      if (submitedRef.message) {
+        // set refresh and access token as cookies
+        cookieGenerator(accessToken, access, req, res);
+        cookieGenerator(refreshToken, refresh, req, res);
+        isAdminCookie(req,res,true);
+
+        return res.status(201).json({
+          message: "account created successfuly",
+          account: { name, lastname },
+        });
+      }
+      else {
+        throw Error("token did not saved successfuly");
       }
     } catch (error) {
       if (error.code == 11000) {//duplication error for email

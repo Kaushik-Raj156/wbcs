@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+
 const connectDB = (handler) => async (req, res) => {
   try {
     if (mongoose.connections[0].readyState) {
@@ -7,7 +8,7 @@ const connectDB = (handler) => async (req, res) => {
       return handler(req, res);
     }
     // Use new db connection
-    mongoose.connect(process.env.MONGODB_URI, {
+    await mongoose.connect(process.env.MONGODB_URI, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
     });
@@ -15,6 +16,8 @@ const connectDB = (handler) => async (req, res) => {
   } catch (err) {
     console.log("DATABASE CONNETCTION FAILED");
     console.log(err.message);
+    res.status(500).json({ error: 'Database connection failed: ' + err.message });
+    return;
   }
 };
 
