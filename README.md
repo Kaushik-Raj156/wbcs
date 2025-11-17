@@ -13,4 +13,4 @@ Built with ` NextJS + Tailwind CSS + mongodb + JWT authentication `.
 
 ## Deploy
 
-[live demo](https://nextommerce.vercel.app/ "nextjs e-commerce live demo")
+[live demo](https://toodies.vercel.app/ "nextjs e-commerce live demo")
