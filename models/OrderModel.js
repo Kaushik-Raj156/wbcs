@@ -36,7 +36,7 @@ const orderSchema = new mongoose.Schema(
     },
     payment_id: {
       type: String,
-      required: true,
+      required: false,
     },
     payment_status: {
       type: String,

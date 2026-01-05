@@ -22,12 +22,18 @@ export default async function handler(req, res) {
 
   const form = new IncomingForm();
   form.keepExtensions = true;
+  form.maxFileSize = 50 * 1024 * 1024; // 50MB max file size
+  form.maxFieldsSize = 50 * 1024 * 1024; // 50MB max total fields size
+  form.maxFiles = 10; // Allow up to 10 files per request
 
   form.parse(req, async (err, fields, files) => {
     try {
       if (err) {
         console.error('Form parsing error:', err);
-        return res.status(500).json({ error: 'Error parsing form' });
+        return res.status(500).json({ 
+          error: 'Error parsing form', 
+          details: err.message 
+        });
       }
 
       const file = files.file?.[0] || files.file;
@@ -35,11 +41,15 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'No file provided' });
       }
 
+      console.log('Uploading file:', file.originalFilename, 'Size:', file.size);
+
       // Upload to Cloudinary
       const result = await cloudinary.v2.uploader.upload(file.filepath, {
         folder: 'nextommerce/products',
         resource_type: 'image',
       });
+
+      console.log('Upload successful:', result.public_id);
 
       // Clean up temp file
       fs.unlinkSync(file.filepath);
@@ -51,7 +61,10 @@ export default async function handler(req, res) {
       });
     } catch (error) {
       console.error('Upload error:', error);
-      res.status(500).json({ error: 'Upload failed' });
+      res.status(500).json({ 
+        error: 'Upload failed',
+        details: error.message 
+      });
     }
   });
 }

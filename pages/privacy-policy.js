@@ -155,7 +155,7 @@ function PrivacyPolicy() {
               If you have questions or concerns about this Privacy Policy, please contact us at:
             </p>
             <p className="mt-2">
-              📧 contact.toodiescb@gmail.com
+              📧 merajiamin1997@gmail.com
             </p>
           </section>
         </div>

@@ -10,25 +10,30 @@ export default function Profile() {
   const { updateAccount, account, displayProf, setDisplayProf, lang } =
     useGlobalContext();
 
-  useEffect(async () => {
-    const result = await fetch(
-      `${server}/api/account`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-      [account]
-    );
-    const data = await result.json();
-    if (data.message === "Account found") {
-      const { name, lastname, address, phone, isAdmin } = data.account;
-      const newAcc = isAdmin
-        ? { name, lastname, isAdmin }
-        : { name, lastname, address, phone, isAdmin };
-      updateAccount(newAcc);
-    }
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await fetch(
+          `${server}/api/account`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await result.json();
+        if (data.message === "Account found") {
+          const { name, lastname, address, phone, isAdmin } = data.account;
+          const newAcc = isAdmin
+            ? { name, lastname, isAdmin }
+            : { name, lastname, address, phone, isAdmin };
+          updateAccount(newAcc);
+        }
+      } catch (error) {
+        // Silently handle errors - user might not be logged in
+      }
+    })();
   }, []);
 
   const logOut = async () => {

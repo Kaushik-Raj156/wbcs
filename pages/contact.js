@@ -1,9 +1,9 @@
 import { FaTelegram } from "react-icons/fa";
 import { FiAtSign } from "react-icons/fi";
 
-function contact() {
+function Contact() {
   return (
-    <div className="bg-secondary text-secondary absolute top-[25%]  right-0 left-0 flex justify-center">
+    <div className="bg-secondary text-secondary min-h-screen flex items-center justify-center p-10">
       <div>
         <h2 className="text-primary text-xl font-bold mb-6">Contacts:</h2>
         <ul className="text-lg">
@@ -21,4 +21,4 @@ function contact() {
   );
 }
 
-export default contact;
+export default Contact;

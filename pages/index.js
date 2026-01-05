@@ -35,7 +35,7 @@ export default function Home({ newArivals, sales }) {
                 {translate("latest_arivals")}
               </h2>
               <div className="w-24 h-1 bg-accent mx-auto rounded-full"></div>
-              <p className="text-lg text-gray-600 mt-4 max-w-2xl mx-auto">
+              <p className="text-lg text-secondary mt-4 max-w-2xl mx-auto">
                 Discover our newest arrivals, carefully curated for the modern minimalist
               </p>
             </motion.div>
@@ -68,7 +68,7 @@ export default function Home({ newArivals, sales }) {
                 {translate("sales")}
               </h2>
               <div className="w-24 h-1 bg-red-500 mx-auto rounded-full"></div>
-              <p className="text-lg text-gray-600 mt-4 max-w-2xl mx-auto">
+              <p className="text-lg text-secondary mt-4 max-w-2xl mx-auto">
                 Limited time offers on premium quality products. Don't miss out!
               </p>
             </motion.div>

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useGlobalContext } from "../Contexts/globalContext/context";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { server } from "../config";
 import AdminNav from "./admin/AdminNav";
 
 // theme toggle Button
@@ -58,11 +57,11 @@ function Navbar() {
               onChange={(e) => setSearch(e.target.value)}
               onKeyUp={(e) => {
                 if (e.key === "Enter") {
-                  let currentUrlParams = new URLSearchParams(router.query);
-                  currentUrlParams.set("q", search);
-                  router.push(
-                    server + "/search?" + currentUrlParams.toString()
-                  );
+                  const newQuery = { ...router.query, q: search };
+                  router.push({
+                    pathname: '/search',
+                    query: newQuery,
+                  });
                   setSearch("");
                 }
               }}
@@ -78,6 +77,7 @@ function Navbar() {
             <Toggle className="w-5 h-5"/>
           </div>
           <button
+            aria-label="Toggle Cart"
             className="mb-1 mx-3 mt-1 hover:text-accent relative flex flex-row"
             onClick={cartToggler}
           >
@@ -88,9 +88,13 @@ function Navbar() {
               </div>
             ) : null}
           </button>
-            <button onClick={()=>setDisplayProf(!displayProf)} className="mx-3 md:mx-5">
-              <UserCircleIcon className="w-5 h-5" />
-            </button>
+          <button
+            aria-label="Toggle Profile"
+            onClick={() => setDisplayProf(!displayProf)}
+            className="mx-3 md:mx-5"
+          >
+            <UserCircleIcon className="w-5 h-5" />
+          </button>
         </div>
       </nav>
       <div className="absolute w-full py-10 top-0 bg-secondary glob-trans"></div>
@@ -98,4 +102,5 @@ function Navbar() {
     </>
   );
 }
+
 export default Navbar;

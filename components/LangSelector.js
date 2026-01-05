@@ -11,19 +11,7 @@ const {translate:t,lang, langChanger} = useGlobalContext();
       <p>{t("language")}</p>
       <button onClick={() => langChanger(langs["en"])} className="mx-2">
         <ReactCountryFlag
-          countryCode="GB"
-          style={{
-            objectFit: "cover",
-            width: "25px",
-            height: "25px",
-            borderRadius: "50%",
-          }}
-          svg
-        />
-      </button>
-      <button onClick={() => langChanger(langs["fa"])} className="mx-2">
-        <ReactCountryFlag
-          countryCode="IR"
+          countryCode="IN"
           style={{
             objectFit: "cover",
             width: "25px",

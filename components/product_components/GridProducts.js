@@ -3,9 +3,32 @@ import Link from "next/link";
 import Image from "next/image";
 import { shimmer, toBase64 } from "../../shared/utils/imgPlaceholder";
 import { HeartIcon, StarIcon, ShoppingBagIcon } from "@heroicons/react/outline";
-import { HeartIcon as HeartIconSolid } from "@heroicons/react/solid";
+import { useGlobalContext } from "../../Contexts/globalContext/context";
 
-export default function GridProducts({ products, limit }) {
+export default function GridProducts({ products, limit, addItem }) {
+  const { theme } = useGlobalContext();
+  const isDark = theme === "dark";
+
+  const cardClass = isDark
+    ? "group rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] hover:shadow-[0_30px_70px_rgba(0,0,0,0.65)] transition-all duration-500 overflow-hidden border border-white/10 cursor-pointer relative bg-[#0d111d] text-white"
+    : "group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 cursor-pointer relative";
+
+  const imageBgClass = isDark
+    ? "bg-gradient-to-br from-[#151a2c] to-[#0d111d]"
+    : "bg-gradient-to-br from-gray-50 to-gray-100";
+
+  const overlayClass = isDark
+    ? "absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300"
+    : "absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300";
+
+  const placeholderBg = isDark
+    ? "bg-gradient-to-br from-[#1a2135] to-[#0f1424]"
+    : "bg-gradient-to-br from-gray-100 to-gray-200";
+
+  const placeholderCircle = isDark ? "bg-white/10" : "bg-gray-300";
+  const placeholderIcon = isDark ? "text-white/70" : "text-gray-500";
+  const placeholderText = isDark ? "text-white/60" : "text-gray-500";
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -15,9 +38,9 @@ export default function GridProducts({ products, limit }) {
       className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
     >
       {products?.map((product, i) => {
-        if (i >= limit) return;
+        if (i >= limit) return null;
         return (
-          <Link key={i} href={`/product/${product.name}?cat=${product.category}`} passHref>
+          <Link key={product.name} href={`/product/${product.name}?cat=${product.category}`} passHref>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -29,10 +52,10 @@ export default function GridProducts({ products, limit }) {
                 y: { ease: "easeOut", duration: 0.6 },
                 scale: { ease: "easeIn", duration: 0.2 },
               }}
-              className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 cursor-pointer relative"
+              className={cardClass}
             >
               {/* Image Container */}
-              <div className="relative w-full h-80 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+              <div className={`relative w-full h-80 overflow-hidden ${imageBgClass}`}>
                 {product.store[0]?.imgUrls?.[0] ? (
                   <Image
                     alt={product.name}
@@ -44,20 +67,20 @@ export default function GridProducts({ products, limit }) {
                     blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmer(400, 400))}`}
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className={`w-full h-full ${placeholderBg} flex items-center justify-center`}>
                     <div className="text-center">
-                      <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className={`w-16 h-16 ${placeholderCircle} rounded-full flex items-center justify-center mx-auto mb-2`}>
+                        <svg className={`w-8 h-8 ${placeholderIcon}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                       </div>
-                      <span className="text-gray-500 text-sm">No Image</span>
+                      <span className={`text-sm ${placeholderText}`}>No Image</span>
                     </div>
                   </div>
                 )}
 
                 {/* Overlay on Hover */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                <div className={overlayClass}></div>
 
                 {/* Favorite Button */}
                 <motion.button
@@ -66,15 +89,6 @@ export default function GridProducts({ products, limit }) {
                   className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white shadow-lg"
                 >
                   <HeartIcon className="w-5 h-5 text-gray-600 hover:text-red-500 transition-colors" />
-                </motion.button>
-
-                {/* Quick Add to Cart */}
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="absolute bottom-4 right-4 w-10 h-10 bg-accent/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-accent shadow-lg"
-                >
-                  <ShoppingBagIcon className="w-5 h-5 text-white" />
                 </motion.button>
 
                 {/* Badges */}
@@ -89,7 +103,7 @@ export default function GridProducts({ products, limit }) {
                       SALE
                     </motion.div>
                   )}
-                  {product.newArival && (
+                  {product.newArrival && (
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
@@ -154,9 +168,23 @@ export default function GridProducts({ products, limit }) {
 
                   {/* Add to Cart Button */}
                   <motion.button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (addItem) {
+                        addItem({
+                          name: product.name,
+                          price: product.price,
+                          amount: 1,
+                          color: product.store[0]?.color || "",
+                          size: product.store[0]?.sizeAmnt?.[0]?.size || "",
+                          image: product.store[0]?.imgUrls?.[0] || "",
+                        });
+                      }
+                    }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="bg-accent hover:bg-green-600 text-white px-6 py-2 rounded-xl text-sm font-semibold transition-all duration-300 transform hover:shadow-lg shadow-md"
+                    aria-label={`Add ${product.name} to cart`}
                   >
                     Add to Cart
                   </motion.button>

@@ -132,13 +132,13 @@ function create() {
                     Product Name
                   </label>
                   <input
-                    className="w-full bg-primary border border-gray-300 rounded-xl py-3 px-4 focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 outline-none"
+                    className="w-full bg-secondary text-primary border border-hover rounded-xl py-3 px-4 focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200 outline-none shadow-sm placeholder-gray-400"
                     type="text"
                     placeholder="Enter product name..."
                     {...register("name", {
                       required: true,
                       pattern:
-                        /^[^+={}()<>!@#$%^&*?;:,|\\/_.]*[^\s+={}()<>!@#$%^&*?;:,|\\/_.]$/,
+                        /^[^+={}()<>!@#$%^&*?;:,|\\/_.]*[^\s+={}()<>!@#$%^&*?;:,|\\/._.]$/,
                     })}
                   />
                   {errors.name && (
@@ -155,7 +155,7 @@ function create() {
                     Category
                   </label>
                   <select
-                    className="w-full bg-primary border border-gray-300 rounded-xl py-3 px-4 focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 outline-none"
+                    className="w-full bg-secondary text-primary border border-hover rounded-xl py-3 px-4 focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200 outline-none shadow-sm cursor-pointer"
                     name="category"
                     {...register("category", { required: true })}
                   >
@@ -178,7 +178,7 @@ function create() {
                     Price (₹)
                   </label>
                   <input
-                    className="w-full bg-primary border border-gray-300 rounded-xl py-3 px-4 focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 outline-none"
+                    className="w-full bg-secondary text-primary border border-hover rounded-xl py-3 px-4 focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200 outline-none shadow-sm placeholder-gray-400"
                     type="number"
                     placeholder="0.00"
                     {...register("price", { required: true })}
@@ -255,7 +255,7 @@ function create() {
               </h2>
               <div>
                 <textarea
-                  className="w-full h-40 bg-primary border border-gray-300 rounded-xl py-3 px-4 focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200 outline-none resize-none"
+                  className="w-full h-40 bg-secondary text-primary border border-hover rounded-xl py-3 px-4 focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200 outline-none resize-none shadow-sm placeholder-gray-400"
                   type="text"
                   placeholder="Describe your product..."
                   {...register("description", { required: true })}
@@ -273,30 +273,33 @@ function create() {
                 Product Status
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="flex items-center">
+                <div className="flex items-center bg-secondary p-4 rounded-lg border border-hover hover:border-accent transition-all duration-200 cursor-pointer">
                   <input
-                    className="w-4 h-4 text-accent bg-primary border-gray-300 rounded focus:ring-accent focus:ring-2"
+                    id="sale"
+                    className="w-5 h-5 text-accent bg-primary border-2 border-hover rounded focus:ring-2 focus:ring-accent cursor-pointer"
                     type="checkbox"
                     {...register("sale")}
                   />
-                  <label className="ml-3 text-sm font-medium text-primary">On Sale</label>
+                  <label htmlFor="sale" className="ml-3 text-sm font-semibold text-primary cursor-pointer">On Sale 🏷️</label>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center bg-secondary p-4 rounded-lg border border-hover hover:border-accent transition-all duration-200 cursor-pointer">
                   <input
-                    className="w-4 h-4 text-accent bg-primary border-gray-300 rounded focus:ring-accent focus:ring-2"
+                    id="newArival"
+                    className="w-5 h-5 text-accent bg-primary border-2 border-hover rounded focus:ring-2 focus:ring-accent cursor-pointer"
                     type="checkbox"
                     {...register("newArival")}
                   />
-                  <label className="ml-3 text-sm font-medium text-primary">New Arrival</label>
+                  <label htmlFor="newArival" className="ml-3 text-sm font-semibold text-primary cursor-pointer">New Arrival ✨</label>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center bg-secondary p-4 rounded-lg border border-hover hover:border-accent transition-all duration-200 cursor-pointer">
                   <input
-                    className="w-4 h-4 text-accent bg-primary border-gray-300 rounded focus:ring-accent focus:ring-2"
+                    id="available"
+                    className="w-5 h-5 text-accent bg-primary border-2 border-hover rounded focus:ring-2 focus:ring-accent cursor-pointer"
                     type="checkbox"
                     {...register("available")}
                     defaultChecked
                   />
-                  <label className="ml-3 text-sm font-medium text-primary">Available</label>
+                  <label htmlFor="available" className="ml-3 text-sm font-semibold text-primary cursor-pointer">Available ✓</label>
                 </div>
               </div>
             </div>
@@ -305,8 +308,11 @@ function create() {
             <div className="flex justify-center pt-6">
               <button
                 type="submit"
-                className="px-8 py-4 bg-accent hover:bg-green-600 text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold text-lg"
+                className="px-12 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-purple-600 hover:to-blue-500 text-white rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl shadow-lg font-bold text-lg flex items-center gap-2"
               >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+                </svg>
                 Create Product
               </button>
             </div>

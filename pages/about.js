@@ -3,7 +3,7 @@ import { langs } from "../Contexts/values/LangValues";
 import EnAbout from "../components/linguals/EnAbout";
 import FaAbout from "../components/linguals/FaAbout";
 
-function about() {
+function About() {
   const {lang} = useGlobalContext();
 
   return(<>
@@ -11,4 +11,4 @@ function about() {
   </>)
 }
 
-export default about;
+export default About;

@@ -84,8 +84,8 @@ export default function index({ products, allCategories }) {
           <div className="w-[85%] sm:w-[66%] mx-auto">
             {proSt.length === 0 && (
               <div className="text-center py-16">
-                <div className="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-6">
-                  <SearchIcon className="w-12 h-12 text-gray-400" />
+                <div className="inline-flex items-center justify-center w-24 h-24 bg-secondary rounded-full mb-6">
+                  <SearchIcon className="w-12 h-12 text-secondary" />
                 </div>
                 <h3 className="text-2xl font-semibold text-primary mb-2">No Results Found</h3>
                 <p className="text-secondary mb-6 max-w-md mx-auto">

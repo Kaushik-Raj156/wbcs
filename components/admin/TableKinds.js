@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 
 export default function TableKinds({
@@ -18,28 +18,48 @@ export default function TableKinds({
   const uploadFile = async (file) => {
     if (!file) return;
 
+    // Validate file size (50MB max)
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    if (file.size > maxSize) {
+      alert(`File size exceeds maximum limit of 50MB. Selected file is ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (PNG, JPG, GIF, etc.)');
+      return;
+    }
+
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
 
     try {
+      console.log('Uploading file:', file.name, 'Size:', (file.size / 1024).toFixed(2), 'KB');
+      
       const response = await fetch('/api/upload/cloudinary', {
         method: 'POST',
         body: formData,
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Upload failed');
+        throw new Error(data.details || data.error || 'Upload failed');
       }
 
-      const data = await response.json();
+      console.log('Upload successful:', data.url);
+
       const newUrls = [...(storeSt[i].imgUrls || []), data.url];
       let tempObj = [...storeSt];
       tempObj[i].imgUrls = newUrls;
       setStoreSt(tempObj);
+      
+      alert('Image uploaded successfully!');
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Failed to upload image');
+      alert(`Failed to upload image: ${error.message}`);
     } finally {
       setUploading(false);
     }
@@ -87,12 +107,12 @@ export default function TableKinds({
   };
 
   const TR = (val, j) => (
-    <tr>
-      <td>
+    <tr className="border-b border-hover hover:bg-hover transition-colors">
+      <td className="py-3 pr-2">
         <input
-          className="w-full bg-hover text-secondary p-1"
+          className="w-full bg-secondary text-primary border border-hover rounded-lg py-2 px-3 focus:ring-2 focus:ring-accent focus:border-accent transition-all outline-none placeholder-gray-400"
           type="text"
-          placeholder="color"
+          placeholder="e.g., Red, Blue"
           value={color}
           onChange={(e) => {
             setColor(e.target.value);
@@ -102,11 +122,11 @@ export default function TableKinds({
           }}
         />
       </td>
-      <td>
+      <td className="py-3 pr-2">
         <input
-          className="w-full bg-hover text-secondary p-1"
+          className="w-full bg-secondary text-primary border border-hover rounded-lg py-2 px-3 focus:ring-2 focus:ring-accent focus:border-accent transition-all outline-none placeholder-gray-400"
           type="text"
-          placeholder="color code"
+          placeholder="e.g., #FF0000"
           value={clrCode}
           onChange={(e) => {
             setClrCode(e.target.value);
@@ -116,9 +136,9 @@ export default function TableKinds({
           }}
         />
       </td>
-      <td>
+      <td className="py-3 pr-2">
         <select
-          className="w-full text-secondary bg-hover p-1"
+          className="w-full text-primary bg-secondary border border-hover rounded-lg py-2 px-3 focus:ring-2 focus:ring-accent focus:border-accent transition-all outline-none cursor-pointer"
           name="size"
           onChange={(e) => {
             let tempObj = [...storeSt];
@@ -126,8 +146,8 @@ export default function TableKinds({
             setStoreSt(tempObj);
           }}
         >
-          <option selected={"" === val["size"] ? true : false}>
-            select size
+          <option value="" selected={"" === val["size"] ? true : false}>
+            Select size
           </option>
           <option value="XS" selected={"XS" === val["size"] ? true : false}>
             XS
@@ -149,11 +169,11 @@ export default function TableKinds({
           </option>
         </select>
       </td>
-      <td>
+      <td className="py-3">
         <input
-          className="w-full bg-hover text-secondary p-1"
+          className="w-full bg-secondary text-primary border border-hover rounded-lg py-2 px-3 focus:ring-2 focus:ring-accent focus:border-accent transition-all outline-none placeholder-gray-400"
           type="number"
-          placeholder="amount"
+          placeholder="Stock qty"
           defaultValue={val["amount"]}
           onChange={(e) => {
             let tempObj = [...storeSt];
@@ -167,53 +187,66 @@ export default function TableKinds({
 
   return (
     <div className="w-full px-0 mx-auto">
-      <table className="mt-6 mb-4">
-        <tr style={{ textAlign: "left" }}>
-          <th>color</th>
-          <th>color code</th>
-          <th>size</th>
-          <th>amount</th>
-        </tr>
-        {storeSt[i]["sizeAmnt"].map((val, j) => TR(val, j))}
+      <table className="mt-6 mb-4 w-full">
+        <thead>
+          <tr className="text-left border-b-2 border-accent">
+            <th className="pb-3 text-primary font-semibold">Color</th>
+            <th className="pb-3 text-primary font-semibold">Color Code</th>
+            <th className="pb-3 text-primary font-semibold">Size</th>
+            <th className="pb-3 text-primary font-semibold">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {storeSt[i]["sizeAmnt"].map((val, j) => (
+            <React.Fragment key={j}>
+              {TR(val, j)}
+            </React.Fragment>
+          ))}
+        </tbody>
       </table>
-      <div className="mb-6">
+      <div className="mb-6 flex gap-3">
         <button
-          className="w-28 bg-hover  mt-4 rounded-full text-secondary px-auto py-0.5 hover:bg-transparent hover:border-solid hover:border-[1px] hover:border-hovercont hover:text-primary"
+          type="button"
+          className="px-6 py-2 bg-accent hover:bg-green-600 text-white rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md font-medium flex items-center gap-2"
           onClick={() => {
             let tempObj = [...storeSt];
             tempObj[i]["sizeAmnt"].push({ size: "", amount: 0 });
             setStoreSt(tempObj);
           }}
         >
-          add row
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Add Row
         </button>
-        {storeSt[i]["sizeAmnt"].length > 1 ? (
+        {storeSt[i]["sizeAmnt"].length > 1 && (
           <button
-            className="ml-3 w-28 bg-danger  mt-4 rounded-full text-white px-auto py-0.5 hover:bg-transparent hover:border-[1px] hover:border-red-600 hover:text-danger"
+            type="button"
+            className="px-6 py-2 bg-danger hover:bg-red-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md font-medium flex items-center gap-2"
             onClick={() => {
               let tempObj = [...storeSt];
               tempObj[i]["sizeAmnt"].pop();
               setStoreSt(tempObj);
             }}
           >
-            {" "}
-            delete row
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"></path>
+            </svg>
+            Delete Row
           </button>
-        ) : (
-          ""
         )}
       </div>
-      <label>Product Images</label>
-      <p className="text-xs mt-2">
+      <label className="text-base font-semibold text-primary">Product Images</label>
+      <p className="text-sm text-secondary mt-1 mb-3">
         Drag and drop images here or click to select files
       </p>
 
       {/* Drag and Drop Area */}
       <div
-        className={`w-full h-48 mt-4 mb-4 border-2 border-dashed rounded-md flex flex-col items-center justify-center cursor-pointer transition-colors ${
+        className={`w-full h-48 mt-4 mb-4 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 ${
           isDragOver
-            ? 'border-accent bg-accent bg-opacity-10'
-            : 'border-gray-300 hover:border-accent'
+            ? 'border-accent bg-accent bg-opacity-20 scale-105'
+            : 'border-hover hover:border-accent bg-secondary'
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
